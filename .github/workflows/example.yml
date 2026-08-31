@@ -1,0 +1,108 @@
+name: Test Login and Pull
+on:
+  push:
+    branches: [main]
+  pull_request_target:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_PATH: quay.io/redhat-github-actions/petclinic-private:latest
+  REGISTRY_USER: redhat-github-actions+redhat_actions_ci_puller
+  IMAGE_REGISTRY: quay.io
+  REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+jobs:
+  podman-pull:
+    name: Log in and pull image with Podman
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        install_latest: [ true, false ]
+
+    steps:
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install latest podman
+        if: matrix.install_latest
+        run: |
+          bash .github/install_latest_podman.sh
+
+      - name: Log in to quay.io
+        uses: ./
+        with:
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          auth_file_path: ./auth/auth.json
+
+      - name: Pull image with Podman
+        env:
+          IMAGE_PATH: ${{ env.IMAGE_PATH }}
+        run: podman pull "$IMAGE_PATH"
+
+  buildah-pull:
+    name: Log in and pull image with Buildah
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        install_latest: [ true, false ]
+    steps:
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install latest podman
+        if: matrix.install_latest
+        run: |
+          bash .github/install_latest_podman.sh
+
+      - name: Log in to quay.io
+        uses: ./
+        with:
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Pull image with Buildah
+        env:
+          IMAGE_PATH: ${{ env.IMAGE_PATH }}
+        run: buildah pull "$IMAGE_PATH"
+
+  docker-pull:
+    name: Log in and pull image with Docker
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        install_latest: [ true, false ]
+    steps:
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install latest podman
+        if: matrix.install_latest
+        run: |
+          bash .github/install_latest_podman.sh
+
+      - name: Log in to quay.io
+        uses: ./
+        with:
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Pull image with Docker
+        env:
+          IMAGE_PATH: ${{ env.IMAGE_PATH }}
+        run: docker pull "$IMAGE_PATH"

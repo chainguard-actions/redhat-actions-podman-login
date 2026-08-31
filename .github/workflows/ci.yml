@@ -1,0 +1,62 @@
+name: CI checks
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Run ESLint
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - run: npm ci
+      - run: npm run lint
+
+  check-dist:
+    name: Check Distribution
+    runs-on: ubuntu-24.04
+    env:
+      BUNDLE_FILE: "dist/index.js"
+      BUNDLE_COMMAND: "npm run bundle"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install
+        run: npm ci
+
+      - name: Verify Latest Bundle
+        uses: redhat-actions/common/bundle-verifier@19c680ff95a52ee905481b54fc08d5c47788600c # v2
+        with:
+          bundle_file: ${{ env.BUNDLE_FILE }}
+          bundle_command: ${{ env.BUNDLE_COMMAND }}
+
+  check-inputs-outputs:
+    name: Check Input and Output enums
+    runs-on: ubuntu-24.04
+    env:
+      IO_FILE: ./src/generated/inputs-outputs.ts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Input and Output enums
+        uses: redhat-actions/common/action-io-generator@19c680ff95a52ee905481b54fc08d5c47788600c # v2
+        with:
+          io_file: ${{ env.IO_FILE }}

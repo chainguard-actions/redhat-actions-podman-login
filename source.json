@@ -1,6 +1,11 @@
 {
   "owner": "redhat-actions",
   "repo": "podman-login",
-  "version": "",
-  "url": "https://github.com/redhat-actions/podman-login"
+  "version": "v2.0",
+  "commit_sha": "50c2d9a331bb67c8fdab99b86455fad05e2e3252",
+  "url": "https://github.com/redhat-actions/podman-login",
+  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "2",
+  "harden_agent_version": "2"
 }

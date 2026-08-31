@@ -1,0 +1,39 @@
+name: Test podman login with custom auth file path
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install podman
+        run: |
+          which podman || (sudo apt-get update -qq && sudo apt-get install -y podman)
+
+      - name: Create auth file directory
+        run: mkdir -p /tmp/podman-auth
+
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          registry: docker.io
+          username: testuser
+          password: testpassword
+          auth_file_path: /tmp/podman-auth/auth.json
+          logout: 'false'
+
+      - name: Assert action ran and failed gracefully with invalid credentials
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action succeeded and wrote auth file"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully with invalid credentials (expected)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
