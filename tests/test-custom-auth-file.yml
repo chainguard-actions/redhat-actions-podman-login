@@ -1,4 +1,4 @@
-name: Test basic podman login
+name: Test podman login with custom auth file path
 on:
   workflow_dispatch:
 jobs:
@@ -11,23 +11,26 @@ jobs:
         run: |
           which podman || (apt-get update -qq && apt-get install -y -qq podman)
 
+      - name: Create auth file directory
+        run: mkdir -p /tmp/podman-auth
+
       - id: action
         uses: .
         with:
           registry: docker.io
           username: testuser
           password: testpassword
+          auth_file_path: /tmp/podman-auth/auth.json
         continue-on-error: true
 
-      - name: Assert action ran (login attempt was made)
+      - name: Assert action ran with custom auth file path
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
           # The action should either succeed or fail with an auth error (not a missing input error)
-          # A missing-input error would be a different kind of failure
           if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action ran and attempted login"
+            echo "PASS: action ran and attempted login with custom auth file"
           else
             echo "FAIL: unexpected outcome '$OUTCOME'"
             exit 1

@@ -1,4 +1,4 @@
-name: Test basic podman login
+name: Test podman login with logout disabled
 on:
   workflow_dispatch:
 jobs:
@@ -17,17 +17,18 @@ jobs:
           registry: docker.io
           username: testuser
           password: testpassword
+          logout: 'false'
         continue-on-error: true
 
-      - name: Assert action ran (login attempt was made)
+      - name: Assert action ran with logout disabled
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
           # The action should either succeed or fail with an auth error (not a missing input error)
-          # A missing-input error would be a different kind of failure
+          # With logout: false, the post step should not log out
           if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action ran and attempted login"
+            echo "PASS: action ran with logout disabled"
           else
             echo "FAIL: unexpected outcome '$OUTCOME'"
             exit 1
