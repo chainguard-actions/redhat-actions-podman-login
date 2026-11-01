@@ -6,10 +6,10 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 ## Versions
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v1 | [`v1`](https://github.com/chainguard-actions/redhat-actions-podman-login/tree/v1) | [`4934294`](https://github.com/redhat-actions/podman-login/commit/4934294ad0449894bcd1e9f191899d7292469603) |
-| v2.0 | [`v2.0`](https://github.com/chainguard-actions/redhat-actions-podman-login/tree/v2.0) | [`50c2d9a`](https://github.com/redhat-actions/podman-login/commit/50c2d9a331bb67c8fdab99b86455fad05e2e3252) |
+| Version | Tag | Upstream commit | Hardening report |
+|---------|-----|-----------------|------------------|
+| v1 | [`v1`](https://github.com/chainguard-actions/redhat-actions-podman-login/tree/v1) | [`4934294`](https://github.com/redhat-actions/podman-login/commit/4934294ad0449894bcd1e9f191899d7292469603) | [`HARDENING.md`](https://github.com/chainguard-actions/redhat-actions-podman-login/blob/v1/HARDENING.md) |
+| v2.0 | [`v2.0`](https://github.com/chainguard-actions/redhat-actions-podman-login/tree/v2.0) | [`50c2d9a`](https://github.com/redhat-actions/podman-login/commit/50c2d9a331bb67c8fdab99b86455fad05e2e3252) | [`HARDENING.md`](https://github.com/chainguard-actions/redhat-actions-podman-login/blob/v2.0/HARDENING.md) |
 
 ## Privacy
 
